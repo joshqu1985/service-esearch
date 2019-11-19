@@ -4,5 +4,5 @@ all:
 
 
 clean:
-	@go clean
+	@go clean cmd/*
 	@rm -f ./esearch
