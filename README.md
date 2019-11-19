@@ -1,1 +1,1 @@
-# service-esearch
+esearch: 基于elasticsearch开发的搜索服务，logstash同步数据
