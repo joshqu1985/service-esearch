@@ -4,70 +4,63 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/opentracing/opentracing-go"
-	"google.golang.org/grpc"
-
 	"github.com/joshqu1985/fireman/pkg/configor"
-	"github.com/joshqu1985/fireman/pkg/consul"
-	"github.com/joshqu1985/fireman/pkg/locip"
-	"github.com/joshqu1985/fireman/pkg/logger"
+	"github.com/joshqu1985/fireman/pkg/discover"
+	"github.com/joshqu1985/fireman/pkg/log"
+	"github.com/joshqu1985/fireman/pkg/store/elasticsearch"
 	"github.com/joshqu1985/fireman/pkg/tracing"
+	"github.com/joshqu1985/fireman/pkg/transport/rpc"
 
+	"github.com/joshqu1985/service-esearch/internal/dao/database"
 	"github.com/joshqu1985/service-esearch/internal/handler"
-	"github.com/joshqu1985/service-esearch/internal/store"
+	"github.com/joshqu1985/service-esearch/internal/service"
 )
 
 type Config struct {
-	Name      string
-	Port      int
-	Discovery consul.Config
-	Elastic   store.Config
-	Logger    logger.Config
+	Name     string
+	Port     int
+	Discover discover.Config
+	Elastic  elasticsearch.Config
+	Log      log.Config
 }
 
 var (
-	Conf  Config
-	LocIP string
+	Conf Config
 )
 
 func init() {
-	if err := configor.LoadConfig("./configs/conf.toml", &Conf); err != nil {
+	if err := configor.Load("./configs/conf.toml", &Conf); err != nil {
 		panic(err)
 	}
 
-	var err error
-	if LocIP, err = locip.GetLocalIP(); err != nil {
+	log.Init(Conf.Log)
+
+	if _, err := tracing.Init(Conf.Name); err != nil {
 		panic(err)
 	}
 
-	if _, err := tracing.InitTracing(Conf.Name); err != nil {
+	if err := discover.Init(Conf.Discover); err != nil {
 		panic(err)
 	}
 }
 
 func main() {
+	gsvr := rpc.NewUnaryServer()
+
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", Conf.Port))
 	if err != nil {
-		fmt.Println("failed to listen:", err)
 		panic(err)
 	}
 
-	grpcSvr := grpc.NewServer(
-		grpc.UnaryInterceptor(tracing.GrpcServerInterceptor(opentracing.GlobalTracer())),
-	)
-
-	handler.RegisterHandler(grpcSvr,
-		store.NewElasticRepo(store.NewElasticClient(Conf.Elastic)),
-		logger.InitLogger(Conf.Logger))
-
-	if err := consul.NewClient(Conf.Discovery).
-		Register(Conf.Name, LocIP, Conf.Port); err != nil {
+	if err := discover.Register(Conf.Name, Conf.Port); err != nil {
 		panic(err)
 	}
-	consul.RegisterGrpcHealth(grpcSvr)
 
-	if err := grpcSvr.Serve(listener); err != nil {
-		fmt.Println("failed to serve:", err)
+	s := service.New(database.NewRepository(elasticsearch.NewPool(Conf.Elastic)))
+
+	handler.RegisterHandler(gsvr, s)
+
+	if err := gsvr.Serve(listener); err != nil {
 		panic(err)
 	}
 }
