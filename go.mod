@@ -13,6 +13,8 @@ require (
 	google.golang.org/grpc v1.25.1
 )
 
-replace github.com/coreos/go-systemd => github.com/coreos/go-systemd/v22 v22.0.0
+replace (
+	github.com/coreos/go-systemd => github.com/coreos/go-systemd/v22 v22.0.0
 
-replace github.com/joshqu1985/fireman => /Users/qulei/mywork/fireman // TODO for debug
+	github.com/joshqu1985/fireman => /Users/qulei/mywork/fireman // TODO for debug
+)

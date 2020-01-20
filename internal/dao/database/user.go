@@ -17,6 +17,7 @@ func (d *db) UsersByName(ctx context.Context, args *model.UsersByNameArgs) (mode
 	handle := func(c *elastic.Client) error {
 		queryer := elastic.NewBoolQuery().
 			Should(elastic.NewQueryStringQuery(args.Name).Field("name"))
+
 		res, err := c.Search().Index("user").Query(queryer).
 			From(int(args.Offset)).Size(args.Limit).Do(context.Background())
 		if err != nil {
@@ -45,6 +46,7 @@ func (d *db) UsersByNear(ctx context.Context, args *model.UsersByNearArgs) (mode
 			elastic.NewGeoDistanceQuery("geo").Point(args.Lat, args.Lon).Distance("10km"))
 		sorter := elastic.NewGeoDistanceSort("geo").
 			Point(args.Lat, args.Lon).Asc().Unit("km").SortMode("min").GeoDistance("plane")
+
 		res, err := c.Search().Index("user").Query(queryer).
 			SortBy(sorter).From(int(args.Offset)).Size(args.Limit).Do(context.Background())
 		if err != nil {

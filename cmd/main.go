@@ -7,7 +7,7 @@ import (
 	"github.com/joshqu1985/fireman/pkg/configor"
 	"github.com/joshqu1985/fireman/pkg/discover"
 	"github.com/joshqu1985/fireman/pkg/log"
-	"github.com/joshqu1985/fireman/pkg/store/elasticsearch"
+	"github.com/joshqu1985/fireman/pkg/store/es"
 	"github.com/joshqu1985/fireman/pkg/tracing"
 	"github.com/joshqu1985/fireman/pkg/transport/rpc"
 
@@ -19,9 +19,9 @@ import (
 type Config struct {
 	Name     string
 	Port     int
-	Discover discover.Config
-	Elastic  elasticsearch.Config
 	Log      log.Config
+	Discover discover.Config
+	Elastic  es.Config
 }
 
 var (
@@ -45,8 +45,6 @@ func init() {
 }
 
 func main() {
-	gsvr := rpc.NewUnaryServer()
-
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", Conf.Port))
 	if err != nil {
 		panic(err)
@@ -56,7 +54,9 @@ func main() {
 		panic(err)
 	}
 
-	s := service.New(database.NewRepository(elasticsearch.NewPool(Conf.Elastic)))
+	gsvr := rpc.NewUnaryServer()
+
+	s := service.New(database.NewRepository(es.NewPool(Conf.Elastic)))
 
 	handler.RegisterHandler(gsvr, s)
 

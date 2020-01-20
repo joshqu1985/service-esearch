@@ -1,13 +1,13 @@
 package database
 
 import (
-	"github.com/joshqu1985/fireman/pkg/store/elasticsearch"
+	"github.com/joshqu1985/fireman/pkg/store/es"
 )
 
 type db struct {
-	Pool *elasticsearch.Pool
+	Pool *es.Pool
 }
 
-func NewRepository(pool *elasticsearch.Pool) DB {
+func NewRepository(pool *es.Pool) DB {
 	return &db{Pool: pool}
 }
