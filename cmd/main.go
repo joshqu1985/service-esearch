@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/joshqu1985/fireman/pkg/configor"
-	"github.com/joshqu1985/fireman/pkg/discover"
-	"github.com/joshqu1985/fireman/pkg/log"
-	"github.com/joshqu1985/fireman/pkg/store/es"
-	"github.com/joshqu1985/fireman/pkg/tracing"
-	"github.com/joshqu1985/fireman/pkg/transport/rpc"
+	"github.com/joshqu1985/fireman/configor"
+	"github.com/joshqu1985/fireman/discover"
+	"github.com/joshqu1985/fireman/log"
+	"github.com/joshqu1985/fireman/store/es"
+	"github.com/joshqu1985/fireman/tracing"
+	"github.com/joshqu1985/fireman/transport/rpc"
 
 	"github.com/joshqu1985/service-esearch/internal/dao/database"
 	"github.com/joshqu1985/service-esearch/internal/handler"

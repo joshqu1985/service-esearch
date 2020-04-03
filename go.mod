@@ -17,4 +17,5 @@ replace (
 	github.com/coreos/go-systemd => github.com/coreos/go-systemd/v22 v22.0.0
 
 	github.com/joshqu1985/fireman => /Users/qulei/mywork/fireman // TODO for debug
+	github.com/joshqu1985/protos => /Users/qulei/mywork/protos // TODO for debug
 )

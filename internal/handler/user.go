@@ -4,8 +4,9 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/joshqu1985/fireman/pkg/util/page"
-	"github.com/joshqu1985/protos/pkg/pb"
+	"github.com/joshqu1985/fireman/util/page"
+	"github.com/joshqu1985/protos/pb"
+
 	"github.com/joshqu1985/service-esearch/internal/model"
 )
 

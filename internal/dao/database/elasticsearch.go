@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/joshqu1985/fireman/pkg/store/es"
+	"github.com/joshqu1985/fireman/store/es"
 )
 
 type db struct {
